@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 
 #include <string>
 #include <iostream>
@@ -6,6 +7,7 @@
 #include <list>
 #include <fstream>
 #include <sstream>
+#include<algorithm>
 
 using namespace std;
 
@@ -16,6 +18,10 @@ struct Annual_file
 	int Year;
 	int Death_by_cancer;
 	int Death_by_diseases;
+	bool operator < ( const Annual_file& x )const
+	{
+		return Death_by_cancer > x.Death_by_cancer;
+	}
 };
 
 //Total cancer deaths by type file
@@ -26,38 +32,6 @@ struct Total_cancer_file
 	string Country;
 	int Year;
 	vector <int> Number_of_deaths;
-
-	/*
-	int Liver_cancer;
-	int Kidney_cancer;
-	int Lip_and_oral_cavity_cancer;
-	int Tracheal_bronchus_and_lung_cancer;
-	int Larynx_cancer;
-	int Gallbladder_and_biliary_tract_cancer;
-	int Malignant_skin_melanoma;
-	int Leukemia;
-	int Hodgkin_lymphoma;
-	int Multiple_myeloma;
-	int Other_neoplasms;
-	int Breast_cancer;
-	int Prostate_cancer;
-	int Thyroid_cancer;
-	int Stomach_cancer;
-	int Bladder_cancer;
-	int Uterine_cancer;
-	int Ovarian_cancer;
-	int Cervical_cancer;
-	int Brain_and_central_nervous_system_cancer;
-	int Non_Hodgkin_lymphoma;
-	int Pancreatic_cancer;
-	int Esophageal_cancer;
-	int Testicular_cancer;
-	int Nasopharynx_cancer;
-	int Other_pharynx_cancer;
-	int Colon_and_rectum_cancer;
-	int Non_melanoma_skin_cancer;
-	int Mesothelioma;
-	*/
 };
 
 
@@ -69,17 +43,60 @@ struct Population_share_file
 	string Country;
 	int Year;
 
-	double First_range;		//under five
-	double Second_range;	//5-14
-	double Third_range;		//15-49
-	double Fourth_range;	//50-69
-	double Fifth_range;		//70+
 	double All_ages;
+	vector<double> Deaths;
+
+	bool operator < ( const Population_share_file& x )const
+	{
+		return Deaths > x.Deaths;
+	}
+};
+
+struct Type_year
+{
+	int Year;
+	vector<int> Deaths;
+};
+
+struct all
+{
+	string Country;
+	int Year;
+	double Most_deaths_num_age;
+	string Most_deaths_range;
+	double Least_deaths_num_age;
+	string Least_deaths_range;
+
+	int Most_deaths_num;
+	string Most_deaths_name;
+	int Least_deaths_num;
+	string Least_deaths_name;
+
+	int Total_num_population;
 };
 
 class File
 {
+private:
+
+	//Method declarations
+	bool annual_file_read( string file_name );
+	bool total_file_read( string file_name );
+	bool share_file_read( string file_name );
+
+
 public:
+
+	bool population( );								// count number of death overall in each country and year
+	bool static_cancer( );							//method with checking which type of cancer caused the most and least death in each country and year
+	bool static_ages( );							// find max and min number of deaths by age range in each country and year
+	void annual_sort( );							//sorting from the largest number of deaths performed due to the uprisin
+	bool death_count_by_year( );					// count hhoww many deaths were in each of year in each type of cancer
+													// find max and min number of deaths by type overall
+	bool per( );
+	bool save_to_file( );
+
+	vector<all>Summary;
 	//Vector with column headers
 	vector <string> Head_annual;
 
@@ -94,12 +111,23 @@ public:
 
 	//List with all years 
 	list <int> Years;
-	
+
+	//List with all number of population
+	//vector <int> Total_num_population;
+
 	//Struct vector
 	vector <Annual_file> Data_annual;
 	vector <Total_cancer_file> Data_total;
 	vector <Population_share_file> Data_population;
 
-	//Method declarations
-	bool annual_file_read( string file_name );
+	vector <Annual_file> Country_by_cancer;
+
+	//funckja liczaca ile bylo zgonow dla kazdego typu w kazdym roku
+	vector<Type_year> Death_num_by_type;
+
+	vector<int> Min_in_type;
+	vector<int> Max_in_type;
+	vector<double> Percent;
+
+	File( string file1, string file2, string file3 );
 };
