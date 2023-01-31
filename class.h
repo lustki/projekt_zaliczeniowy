@@ -45,11 +45,12 @@ struct Population_share_file
 
 	double All_ages;
 	vector<double> Deaths;
-
+	/*
 	bool operator < ( const Population_share_file& x )const
 	{
 		return Deaths > x.Deaths;
 	}
+	*/
 };
 
 struct Type_year

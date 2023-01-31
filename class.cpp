@@ -291,65 +291,6 @@ bool File::share_file_read( string file_name )
 	return true;
 }
 
-bool File::population( )
-{
-	vector <Annual_file> annual_temp = Data_annual;
-	vector<Population_share_file> population_temp = Data_population;
-
-	all temp = { "",0,0,"",0,"",0,"",0,"",0 };
-
-	for(auto country : Country)
-	{
-		int i = 0;
-		int j = 0;
-		int k = 0;
-		int l = 0;
-		for(auto years : Years)
-		{
-			k = 0;
-			temp.Country = country;
-			temp.Year = years;
-			for(i = 0; i < annual_temp.size( ); i++)
-			{
-				l = 0;
-				if(annual_temp[i].Country == country && annual_temp[i].Year == years)
-				{
-					for(j = 0; j < population_temp.size( ); j++)
-					{
-						if(population_temp[j].Country == country && population_temp[j].Year == years)
-						{
-							if(annual_temp[i].Death_by_cancer == -1 || population_temp[j].All_ages == -1)
-							{
-								annual_temp.erase( annual_temp.begin( ) + i );
-								population_temp.erase( population_temp.begin( ) + j );
-								temp.Total_num_population = -1;
-								break;
-							}
-							temp.Total_num_population = annual_temp[i].Death_by_cancer * 100 / population_temp[j].All_ages ;
-							annual_temp.erase( annual_temp.begin( ) + i );
-							population_temp.erase( population_temp.begin( ) + j );
-							break;
-						}
-						else
-							l++;
-					}
-					if(l == population_temp.size( ) && population_temp.size( ) > 2)
-					{
-						temp.Total_num_population = -1;
-						annual_temp.erase( annual_temp.begin( ) + i );
-					}
-				}
-				else
-					k++;
-			}
-			if(k == annual_temp.size( ) && annual_temp.size( ) > 2)
-				temp.Total_num_population = -1;
-			Summary.push_back( temp );
-		}
-	}
-	return true;
-}
-
 bool File::static_cancer( )
 {
 	int k;
@@ -597,13 +538,83 @@ bool File::save_to_file( )
 	}
 	outfile3.close( );
 
-	ofstream outfile4( "percent.death.csv" );
-	outfile4 << "Country,Year,Percentage" << endl;
+	ofstream outfile4( "percent_death.csv" );
+	outfile4 << "Country,Year,Percent" << endl;
 	for(int i = 0; i < Summary.size( ); i++)
 	{
 		outfile4 << Summary[i].Country << "," << Summary[i].Year << "," << Percent[i] << endl;
 	}
 	outfile4.close( );
 
+	ofstream outfile5( "country_by_num_of_deaths.csv" );
+	outfile5 << "Country,Year,Deaths by cancer" << endl;
+	for(int i = 0; i < Country_by_cancer.size( ); i++)
+	{
+		outfile5 << Country_by_cancer[i].Country << ',' << Country_by_cancer[i].Year << ',' << Country_by_cancer[i].Death_by_cancer << endl;
+	}
+	outfile5.close( );
+
 	return true;
 }
+
+/*
+* 
+bool File::population( )
+{
+	vector <Annual_file> annual_temp = Data_annual;
+	vector<Population_share_file> population_temp = Data_population;
+
+	all temp = { "",0,0,"",0,"",0,"",0,"",0 };
+
+	for(auto country : Country)
+	{
+		int i = 0;
+		int j = 0;
+		int k = 0;
+		int l = 0;
+		for(auto years : Years)
+		{
+			k = 0;
+			temp.Country = country;
+			temp.Year = years;
+			for(i = 0; i < annual_temp.size( ); i++)
+			{
+				l = 0;
+				if(annual_temp[i].Country == country && annual_temp[i].Year == years)
+				{
+					for(j = 0; j < population_temp.size( ); j++)
+					{
+						if(population_temp[j].Country == country && population_temp[j].Year == years)
+						{
+							if(annual_temp[i].Death_by_cancer == -1 || population_temp[j].All_ages == -1)
+							{
+								annual_temp.erase( annual_temp.begin( ) + i );
+								population_temp.erase( population_temp.begin( ) + j );
+								temp.Total_num_population = -1;
+								break;
+							}
+							temp.Total_num_population = annual_temp[i].Death_by_cancer * 100 / population_temp[j].All_ages ;
+							annual_temp.erase( annual_temp.begin( ) + i );
+							population_temp.erase( population_temp.begin( ) + j );
+							break;
+						}
+						else
+							l++;
+					}
+					if(l == population_temp.size( ) && population_temp.size( ) > 2)
+					{
+						temp.Total_num_population = -1;
+						annual_temp.erase( annual_temp.begin( ) + i );
+					}
+				}
+				else
+					k++;
+			}
+			if(k == annual_temp.size( ) && annual_temp.size( ) > 2)
+				temp.Total_num_population = -1;
+			Summary.push_back( temp );
+		}
+	}
+	return true;
+}
+*/
